@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Automation Anywhere 360: Hướng Dẫn Nhập Môn & Thực Hành</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+        /* Custom styles for specific interactive elements not covered by Tailwind utilities */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f4; /* stone-100 - Warm neutral */
+            color: #292524; /* stone-800 */
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        /* Custom Scrollbar for navigation */
+        .nav-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .nav-scroll::-webkit-scrollbar-track {
+            background: #e7e5e4;
+        }
+        .nav-scroll::-webkit-scrollbar-thumb {
+            background: #a8a29e;
+            border-radius: 3px;
+        }
+
+        /* Card Hover Effects */
+        .interactive-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .interactive-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .step-check:checked + label {
+            text-decoration: line-through;
+            color: #78716c;
+        }
+    </style>
+        <!-- Chosen Palette: Warm Neutrals (Stone) with Orange/Amber Accents (Automation Anywhere Brand Vibe) -->
+    </head>
+    <body class="h-screen flex overflow-hidden">
+
+        <!-- Mobile Menu Button -->
+        <button id="mobile-menu-btn"
+            class="md:hidden fixed top-4 right-4 z-50 bg-orange-500 text-white p-2 rounded shadow-lg">
+            ☰ Menu
+        </button>
+
+        <!-- Sidebar Navigation -->
+        <nav id="sidebar"
+            class="bg-stone-900 text-stone-300 w-64 flex-shrink-0 flex flex-col h-full transform -translate-x-full md:translate-x-0 transition-transform duration-300 fixed md:relative z-40">
+            <div class="p-6 border-b border-stone-700 bg-stone-950">
+                <h1
+                    class="text-xl font-bold text-orange-500 tracking-wider">A360
+                    MASTER CLASS</h1>
+                <p class="text-xs text-stone-400 mt-1">Dành cho người mới bắt
+                    đầu</p>
+            </div>
+
+            <div class="flex-1 overflow-y-auto nav-scroll py-4">
+                <div
+                    class="px-4 mb-2 text-xs uppercase tracking-wider text-stone-500 font-semibold">Tổng
+                    quan</div>
+                <button onclick="loadSection('dashboard')"
+                    class="w-full text-left px-6 py-3 hover:bg-stone-800 hover:text-white transition-colors flex items-center gap-2 border-l-4 border-transparent active-nav"
+                    id="nav-dashboard">
+                    <span>⊞</span> Dashboard
+                </button>
+
+                <div
+                    class="px-4 mt-6 mb-2 text-xs uppercase tracking-wider text-stone-500 font-semibold">Học
+                    Phần (Modules)</div>
+
+                <button onclick="loadSection('intro')"
+                    class="w-full text-left px-6 py-3 hover:bg-stone-800 hover:text-white transition-colors flex items-center gap-2 border-l-4 border-transparent"
+                    id="nav-intro">
+                    <span>1.</span> Giới thiệu & Giao diện
+                </button>
+
+                <button onclick="loadSection('variables')"
+                    class="w-full text-left px-6 py-3 hover:bg-stone-800 hover:text-white transition-colors flex items-center gap-2 border-l-4 border-transparent"
+                    id="nav-variables">
+                    <span>2.</span> Variables (Biến)
+                </button>
+
+                <button onclick="loadSection('excel')"
+                    class="w-full text-left px-6 py-3 hover:bg-stone-800 hover:text-white transition-colors flex items-center gap-2 border-l-4 border-transparent"
+                    id="nav-excel">
+                    <span>3.</span> Excel Automation
+                </button>
+
+                <button onclick="loadSection('actions')"
+                    class="w-full text-left px-6 py-3 hover:bg-stone-800 hover:text-white transition-colors flex items-center gap-2 border-l-4 border-transparent"
+                    id="nav-actions">
+                    <span>4.</span> Actions Cơ Bản
+                </button>
+
+                <div
+                    class="px-4 mt-6 mb-2 text-xs uppercase tracking-wider text-stone-500 font-semibold">Thực
+                    hành</div>
+                <button onclick="loadSection('simulation')"
+                    class="w-full text-left px-6 py-3 hover:bg-stone-800 hover:text-white transition-colors flex items-center gap-2 border-l-4 border-transparent"
+                    id="nav-simulation">
+                    <span>🎮</span> Giả lập Bot Creator
+                </button>
+
+                <div
+                    class="px-4 mt-6 mb-2 text-xs uppercase tracking-wider text-stone-500 font-semibold">Tài liệu</div>
+                <button onclick="loadSection('tutorials')"
+                    class="w-full text-left px-6 py-3 hover:bg-stone-800 hover:text-white transition-colors flex items-center gap-2 border-l-4 border-transparent"
+                    id="nav-tutorials">
+                    <span>📚</span> Cẩm nang
+                </button>
+            </div>
+
+            <div class="p-4 border-t border-stone-800 bg-stone-950 text-xs">
+                <p>Tiến độ học tập</p>
+                <div class="w-full bg-stone-700 rounded-full h-2 mt-2">
+                    <div id="overall-progress"
+                        class="bg-orange-500 h-2 rounded-full transition-all duration-500"
+                        style="width: 0%"></div>
+                </div>
+                <p class="text-right mt-1" id="progress-text">0%</p>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 overflow-y-auto bg-stone-100 p-4 md:p-8"
+            id="main-content">
+            <!-- Content injected via JS -->
+        </main>
+
+        <script>
+        // --- Data & Content Store ---
+        const courseData = {
+            dashboard: {
+                title: "Chào mừng đến với Automation Anywhere 360",
+                description: "Tài liệu này được thiết kế để đưa bạn từ con số 0 trở thành người có thể tự xây dựng bot đầu tiên. Hãy bắt đầu hành trình RPA của bạn.",
+                content: `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-orange-500">
+                            <h3 class="text-lg font-bold mb-2">Mục tiêu khóa học</h3>
+                            <ul class="list-disc pl-5 space-y-2 text-stone-600">
+                                <li>Hiểu rõ kiến trúc Automation Anywhere 360 (Control Room, Bot Agent).</li>
+                                <li>Thành thạo thao tác với Variables (Biến).</li>
+                                <li>Tự động hóa Excel cơ bản và nâng cao.</li>
+                                <li>Sử dụng các Action Loops, If/Else, String Operation.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border-t-4 border-blue-500">
+                            <h3 class="text-lg font-bold mb-2">Tại sao học A360?</h3>
+                            <div class="chart-container">
+                                <canvas id="benefitsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h3 class="text-lg font-bold mb-4">Lộ trình khuyến nghị</h3>
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <div class="flex-1 bg-stone-50 p-4 rounded border border-stone-200 text-center cursor-pointer hover:bg-orange-50 transition" onclick="loadSection('intro')">
+                                <div class="text-2xl mb-2">1</div>
+                                <div class="font-bold">Giao diện</div>
+                            </div>
+                            <div class="text-stone-300 text-2xl self-center">➔</div>
+                            <div class="flex-1 bg-stone-50 p-4 rounded border border-stone-200 text-center cursor-pointer hover:bg-orange-50 transition" onclick="loadSection('variables')">
+                                <div class="text-2xl mb-2">2</div>
+                                <div class="font-bold">Variables</div>
+                            </div>
+                            <div class="text-stone-300 text-2xl self-center">➔</div>
+                            <div class="flex-1 bg-stone-50 p-4 rounded border border-stone-200 text-center cursor-pointer hover:bg-orange-50 transition" onclick="loadSection('excel')">
+                                <div class="text-2xl mb-2">3</div>
+                                <div class="font-bold">Excel</div>
+                            </div>
+                            <div class="text-stone-300 text-2xl self-center">➔</div>
+                            <div class="flex-1 bg-stone-50 p-4 rounded border border-stone-200 text-center cursor-pointer hover:bg-orange-50 transition" onclick="loadSection('actions')">
+                                <div class="text-2xl mb-2">4</div>
+                                <div class="font-bold">Actions</div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            intro: {
+                title: "Phần 1: Giới thiệu & Giao diện A360",
+                description: "Làm quen với hệ sinh thái Automation Anywhere.",
+                content: `
+                    <div class="space-y-8">
+                        <!-- Theory Section -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <h2 class="text-xl font-bold text-orange-600 mb-4">I. Lý thuyết: 3 Thành phần cốt lõi</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="p-4 bg-stone-50 rounded border border-stone-200">
+                                    <h3 class="font-bold mb-2">1. Control Room (CR)</h3>
+                                    <p class="text-sm text-stone-600">Đây là "Bộ não". Là giao diện web dùng để quản lý Users, Bots, Lịch chạy (Schedule), và xem Dashboard báo cáo.</p>
+                                </div>
+                                <div class="p-4 bg-stone-50 rounded border border-stone-200">
+                                    <h3 class="font-bold mb-2">2. Bot Agent</h3>
+                                    <p class="text-sm text-stone-600">Là một phần mềm nhỏ cài trên máy tính của bạn. Nó giúp kết nối máy tính của bạn với Control Room để nhận lệnh chạy Bot.</p>
+                                </div>
+                                <div class="p-4 bg-stone-50 rounded border border-stone-200">
+                                    <h3 class="font-bold mb-2">3. Bot Creator</h3>
+                                    <p class="text-sm text-stone-600">Giao diện web để bạn "code" (kéo thả). Đây là nơi bạn sẽ dành 90% thời gian để xây dựng quy trình.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <h3 class="font-bold mb-2 text-stone-700">Giao diện Bot Creator</h3>
+                                <ul class="list-disc pl-5 space-y-2 text-stone-600">
+                                    <li><strong>Actions Palette (Trái):</strong> Chứa thư viện lệnh (Excel, PDF, Email...).</li>
+                                    <li><strong>Flow/List View (Giữa):</strong> Vùng làm việc chính, nơi kéo thả các Action vào.</li>
+                                    <li><strong>Properties (Phải):</strong> Nơi cấu hình chi tiết cho từng Action (ví dụ: nhập đường dẫn file).</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Practice Section -->
+                        <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                            <h2 class="text-xl font-bold text-orange-800 mb-4">II. Thực hành: Làm quen môi trường</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="font-bold text-stone-800 mb-2">Bài tập 1: "Hello World" Bot</h3>
+                                <p class="mb-3 text-sm italic text-stone-600">Mục tiêu: Tạo bot đầu tiên hiển thị thông báo.</p>
+                                <div class="bg-white p-4 rounded shadow-sm">
+                                    <div class="space-y-2">
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-1" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-1">Đăng nhập vào Control Room.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-2" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-2">Vào mục <strong>Automation</strong> > Click icon thư mục > Tạo thư mục mới tên "Training".</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-3" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-3">Click <strong>Create a bot</strong> > Đặt tên "HelloWorld" > Create & Edit.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-4" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-4">Ở cột Actions, tìm từ khóa "Message Box".</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-5" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-5">Kéo Action <strong>Message Box</strong> vào vùng làm việc.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-6" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-6">Ở cột Properties bên phải, nhập "Xin chào Automation Anywhere" vào ô "Enter the message to display".</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-7" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-7">Click <strong>Run</strong> và chờ kết quả.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="font-bold text-stone-800 mb-2">Bài tập 2: Sử dụng Recorder (Cơ bản)</h3>
+                                <p class="mb-3 text-sm italic text-stone-600">Mục tiêu: Dùng công cụ ghi hình để mở Calculator.</p>
+                                <div class="bg-white p-4 rounded shadow-sm">
+                                    <div class="space-y-2">
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-8" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-8">Mở ứng dụng Calculator trên Windows trước.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-9" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-9">Trong Bot Creator, tìm action <strong>Recorder: Capture</strong>.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-10" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-10">Chọn Window là "Calculator".</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-11" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-11">Click nút "Capture Object" và di chuột vào số 7 trên Calculator.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p1-12" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p1-12">Chọn Action to take là "Click".</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            variables: {
+                title: "Phần 2: Variables (Biến)",
+                description: "Biến là nơi chứa dữ liệu động. Hiểu về biến là chìa khóa của RPA.",
+                content: `
+                    <div class="space-y-8">
+                        <!-- Theory Section -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <div class="flex flex-col md:flex-row gap-6">
+                                <div class="flex-1">
+                                    <h2 class="text-xl font-bold text-orange-600 mb-4">I. Lý thuyết: Các loại biến phổ biến</h2>
+                                    <p class="mb-4 text-stone-600">Variable (Biến) giống như một cái thùng chứa. Tùy vào thứ bạn muốn chứa (chữ, số, bảng) mà chọn loại thùng phù hợp.</p>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="border-l-4 border-yellow-400 pl-3">
+                                            <h4 class="font-bold">String (Chuỗi)</h4>
+                                            <p class="text-sm">Chứa văn bản, ký tự. <br><em>Ví dụ: "Nguyen Van A", "INV-2023-001"</em></p>
+                                        </div>
+                                        <div class="border-l-4 border-blue-400 pl-3">
+                                            <h4 class="font-bold">Number (Số)</h4>
+                                            <p class="text-sm">Chứa số để tính toán. <br><em>Ví dụ: 100, 3.14, -50</em></p>
+                                        </div>
+                                        <div class="border-l-4 border-green-400 pl-3">
+                                            <h4 class="font-bold">Boolean (Đúng/Sai)</h4>
+                                            <p class="text-sm">Chỉ chứa giá trị TRUE hoặc FALSE. Dùng cho điều kiện If.</p>
+                                        </div>
+                                        <div class="border-l-4 border-purple-400 pl-3">
+                                            <h4 class="font-bold">Record (Dòng)</h4>
+                                            <p class="text-sm">Chứa một dòng dữ liệu (thường từ Excel hoặc Database).</p>
+                                        </div>
+                                        <div class="border-l-4 border-red-400 pl-3">
+                                            <h4 class="font-bold">Dictionary (Từ điển)</h4>
+                                            <p class="text-sm">Chứa các cặp Key-Value. Hữu ích khi đọc Config file.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="font-bold mb-4 text-center">Tần suất sử dụng các loại biến</h3>
+                                    <div class="chart-container">
+                                        <canvas id="variablesChart"></canvas>
+                                    </div>
+                                    <div class="mt-4 bg-stone-100 p-3 rounded text-sm">
+                                        <strong>Mẹo:</strong> Biến trong A360 thường có tiền tố gợi nhớ. <br>
+                                        Ví dụ: <code>sName</code> (String), <code>nAge</code> (Number), <code>rRow</code> (Record).
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Practice Section -->
+                        <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                            <h2 class="text-xl font-bold text-orange-800 mb-4">II. Thực hành: Làm việc với dữ liệu</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="font-bold text-stone-800 mb-2">Bài tập 1: Phép tính cộng đơn giản</h3>
+                                <p class="mb-3 text-sm italic text-stone-600">Mục tiêu: Tạo 2 biến số, cộng lại và hiển thị kết quả (cần chuyển đổi kiểu dữ liệu).</p>
+                                <div class="bg-white p-4 rounded shadow-sm">
+                                    <div class="space-y-2">
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p2-1" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p2-1">Trong tab Variables (bên trái), click dấu (+) để tạo biến.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p2-2" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p2-2">Tạo biến <code>nSoA</code> (Type: Number, Default value: 10).</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p2-3" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p2-3">Tạo biến <code>nSoB</code> (Type: Number, Default value: 5).</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p2-4" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p2-4">Dùng Action <strong>Number: Assign</strong>. Gán <code>$nSoA$ + $nSoB$</code> vào biến mới tên <code>nKetQua</code>.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p2-5" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p2-5">Dùng Action <strong>Number: To String</strong>. Chuyển <code>$nKetQua$</code> thành biến string <code>sKetQua</code>.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p2-6" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p2-6">Dùng <strong>Message Box</strong> để hiển thị <code>$sKetQua$</code>.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            excel: {
+                title: "Phần 3: Excel Automation",
+                description: "Excel Basic vs Excel Advanced. Xử lý dữ liệu bảng tính.",
+                content: `
+                    <div class="space-y-8">
+                         <!-- Theory Section -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <h2 class="text-xl font-bold text-orange-600 mb-4">I. Lý thuyết: Basic vs Advanced</h2>
+                            <p class="mb-4 text-stone-600">A360 cung cấp 2 bộ thư viện chính cho Excel. Bạn cần chọn đúng loại.</p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border border-stone-200 rounded p-4">
+                                    <h3 class="font-bold text-blue-600 mb-2">Excel Basic</h3>
+                                    <ul class="list-disc pl-4 text-sm space-y-1 text-stone-600">
+                                        <li>Không yêu cầu cài đặt Excel trên máy.</li>
+                                        <li>Thao tác nhanh với file nhẹ.</li>
+                                        <li>Chức năng hạn chế (chủ yếu đọc/ghi).</li>
+                                        <li>Dùng khi chỉ cần lấy dữ liệu thô.</li>
+                                    </ul>
+                                </div>
+                                <div class="border border-stone-200 rounded p-4">
+                                    <h3 class="font-bold text-green-600 mb-2">Excel Advanced</h3>
+                                    <ul class="list-disc pl-4 text-sm space-y-1 text-stone-600">
+                                        <li>Yêu cầu máy PHẢI cài Microsoft Excel.</li>
+                                        <li>Đầy đủ tính năng: Filter, Pivot, Color, Macro.</li>
+                                        <li>Chậm hơn Basic một chút do phải mở UI Excel.</li>
+                                        <li>Dùng cho các báo cáo phức tạp.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <h3 class="font-bold mb-2">3 Bước chuẩn khi làm việc với Excel</h3>
+                                <div class="flex flex-col md:flex-row gap-2 text-center text-sm">
+                                    <div class="flex-1 bg-stone-100 p-3 rounded">
+                                        <strong>1. Open</strong><br>
+                                        Mở file & tạo "Session Name" (Ví dụ: 'ExcelData')
+                                    </div>
+                                    <div class="self-center text-stone-400">➔</div>
+                                    <div class="flex-1 bg-stone-100 p-3 rounded">
+                                        <strong>2. Actions</strong><br>
+                                        Get Cell, Set Cell, Go to cell, Loop...
+                                    </div>
+                                    <div class="self-center text-stone-400">➔</div>
+                                    <div class="flex-1 bg-stone-100 p-3 rounded">
+                                        <strong>3. Close</strong><br>
+                                        Đóng Session 'ExcelData' & Lưu file.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Practice Section -->
+                        <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                            <h2 class="text-xl font-bold text-orange-800 mb-4">II. Thực hành: Đọc và Ghi Excel</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="font-bold text-stone-800 mb-2">Bài tập 1: Đọc dữ liệu từ file</h3>
+                                <p class="mb-3 text-sm italic text-stone-600">Mục tiêu: Mở một file Excel có sẵn và đọc giá trị ô A1.</p>
+                                <div class="bg-white p-4 rounded shadow-sm">
+                                    <div class="space-y-2">
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p3-1" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p3-1">Tạo một file Excel <code>data.xlsx</code> tại Desktop, ô A1 ghi "Hello Bot".</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p3-2" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p3-2">Dùng Action <strong>Excel Advanced: Open</strong>. Trỏ đường dẫn tới file Desktop. Session name: "Default".</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p3-3" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p3-3">Dùng Action <strong>Excel Advanced: Get single cell</strong>. Chọn Active cell hoặc Specific cell A1. Lưu vào biến <code>sGiaTri</code>.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p3-4" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p3-4">Dùng <strong>Message Box</strong> hiển thị <code>$sGiaTri$</code>.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p3-5" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p3-5">Dùng Action <strong>Excel Advanced: Close</strong>. Chọn Session "Default".</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="font-bold text-stone-800 mb-2">Bài tập 2: Điền form hàng loạt (Loop Excel)</h3>
+                                <p class="mb-3 text-sm italic text-stone-600">Mục tiêu: Duyệt qua từng dòng trong Excel.</p>
+                                <div class="bg-white p-4 rounded shadow-sm">
+                                    <div class="space-y-2">
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p3-6" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p3-6">Thêm Action <strong>Loop</strong>. Chọn Iterator là "Excel Advanced: For each row in worksheet".</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p3-7" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p3-7">Trong Loop, gán dòng hiện tại vào biến Record tên <code>rCurrentRow</code>.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p3-8" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p3-8">Kéo <strong>Message Box</strong> vào BÊN TRONG Loop.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p3-9" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p3-9">Hiển thị nội dung: <code>$rCurrentRow[0]$</code> (Lấy cột đầu tiên) hoặc <code>$rCurrentRow{"Tên Cột"}$</code>.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            actions: {
+                title: "Phần 4: Các Action Cơ bản Khác",
+                description: "Danh sách các lệnh (Package) quan trọng cần nắm vững.",
+                content: `
+                     <div class="space-y-8">
+                        <!-- Theory Section -->
+                        <div class="bg-white p-6 rounded-lg shadow-sm">
+                            <h2 class="text-xl font-bold text-orange-600 mb-4">I. Từ điển Actions (Package)</h2>
+                            <p class="mb-4 text-stone-600">Trong tab Actions bên trái có hàng trăm lệnh. Đừng hoảng! Bạn chỉ cần nắm vững những nhóm sau:</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="p-3 border rounded hover:bg-stone-50 transition">
+                                    <h4 class="font-bold text-stone-800">📂 File & Folder</h4>
+                                    <p class="text-sm text-stone-600">Create, Delete, Rename, Copy, Check if exists. Dùng để quản lý tệp tin trước khi xử lý.</p>
+                                </div>
+                                <div class="p-3 border rounded hover:bg-stone-50 transition">
+                                    <h4 class="font-bold text-stone-800">🔀 Loop (Vòng lặp)</h4>
+                                    <p class="text-sm text-stone-600">Lặp n lần, Lặp qua từng file trong folder, Lặp qua từng dòng Excel. "Trái tim" của xử lý hàng loạt.</p>
+                                </div>
+                                <div class="p-3 border rounded hover:bg-stone-50 transition">
+                                    <h4 class="font-bold text-stone-800">❓ If / Else (Điều kiện)</h4>
+                                    <p class="text-sm text-stone-600">Kiểm tra điều kiện. Ví dụ: Nếu file tồn tại thì mở, ngược lại thì gửi mail báo lỗi.</p>
+                                </div>
+                                <div class="p-3 border rounded hover:bg-stone-50 transition">
+                                    <h4 class="font-bold text-stone-800">📝 String Operation</h4>
+                                    <p class="text-sm text-stone-600">Cắt chuỗi (Substring), Tìm kiếm, Thay thế, Trim (cắt khoảng trắng). Xử lý dữ liệu thô.</p>
+                                </div>
+                                <div class="p-3 border rounded hover:bg-stone-50 transition">
+                                    <h4 class="font-bold text-stone-800">🛡️ Error Handler (Try/Catch)</h4>
+                                    <p class="text-sm text-stone-600">Bắt lỗi. Đặt toàn bộ code vào "Try". Nếu lỗi, Bot sẽ nhảy vào "Catch" thay vì dừng đột ngột.</p>
+                                </div>
+                                <div class="p-3 border rounded hover:bg-stone-50 transition">
+                                    <h4 class="font-bold text-stone-800">📧 Email</h4>
+                                    <p class="text-sm text-stone-600">Send, Get, Move email. Tự động hóa việc gửi báo cáo.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                         <!-- Practice Section -->
+                        <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
+                            <h2 class="text-xl font-bold text-orange-800 mb-4">II. Thực hành: Logic điều kiện</h2>
+                            
+                            <div class="mb-6">
+                                <h3 class="font-bold text-stone-800 mb-2">Bài tập: Kiểm tra tuổi (If/Else)</h3>
+                                <p class="mb-3 text-sm italic text-stone-600">Mục tiêu: Nhập tuổi, nếu > 18 thì báo "Đủ tuổi", ngược lại báo "Chưa đủ".</p>
+                                <div class="bg-white p-4 rounded shadow-sm">
+                                    <div class="space-y-2">
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p4-1" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p4-1">Dùng Action <strong>Prompt: For value</strong> để hỏi người dùng "Nhập tuổi của bạn". Lưu vào <code>sTuoi</code>.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p4-2" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p4-2">Dùng <strong>String: To Number</strong> đổi <code>sTuoi</code> sang <code>nTuoi</code>.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p4-3" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p4-3">Kéo Action <strong>If</strong> vào. Chọn Condition: Number condition. <code>$nTuoi$</code> Greater than 18.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p4-4" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p4-4">Trong khối If, kéo <strong>Message Box</strong>: "Bạn đã đủ tuổi".</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p4-5" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p4-5">Kéo Action <strong>Else</strong> vào sau If.</label>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <input type="checkbox" id="p4-6" class="step-check mt-1" onchange="updateProgress()">
+                                            <label for="p4-6">Trong khối Else, kéo <strong>Message Box</strong>: "Bạn chưa đủ tuổi".</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                `
+            },
+            simulation: {
+                title: "Phòng Thực Hành Giả Lập",
+                description: "Thử kéo thả logic cơ bản ngay trên trình duyệt để hiểu flow.",
+                content: `
+                    <div class="bg-white p-4 rounded-lg shadow-md select-none">
+                        <div class="flex flex-col lg:flex-row h-[600px] border border-stone-300">
+                            <!-- Actions Palette -->
+                            <div class="w-full lg:w-1/4 bg-stone-100 border-r border-stone-300 p-2 flex flex-col gap-2 overflow-y-auto">
+                                <h3 class="font-bold text-xs uppercase text-stone-500 mb-2">Actions Palette</h3>
+                                <div class="p-2 bg-white border border-stone-300 shadow-sm cursor-pointer hover:bg-orange-50 transition rounded text-sm font-medium" onclick="addToFlow('Open Excel', 'bg-green-100 border-green-300')">
+                                    📗 Excel: Open
+                                </div>
+                                <div class="p-2 bg-white border border-stone-300 shadow-sm cursor-pointer hover:bg-orange-50 transition rounded text-sm font-medium" onclick="addToFlow('Get Cell', 'bg-green-50 border-green-200')">
+                                    📥 Excel: Get Cell
+                                </div>
+                                <div class="p-2 bg-white border border-stone-300 shadow-sm cursor-pointer hover:bg-orange-50 transition rounded text-sm font-medium" onclick="addToFlow('Set Cell', 'bg-green-50 border-green-200')">
+                                    📤 Excel: Set Cell
+                                </div>
+                                <div class="p-2 bg-white border border-stone-300 shadow-sm cursor-pointer hover:bg-orange-50 transition rounded text-sm font-medium" onclick="addToFlow('Loop (Start)', 'bg-blue-100 border-blue-300')">
+                                    🔁 Loop
+                                </div>
+                                <div class="p-2 bg-white border border-stone-300 shadow-sm cursor-pointer hover:bg-orange-50 transition rounded text-sm font-medium" onclick="addToFlow('If Condition', 'bg-yellow-100 border-yellow-300')">
+                                    ❓ If / Else
+                                </div>
+                                <div class="p-2 bg-white border border-stone-300 shadow-sm cursor-pointer hover:bg-orange-50 transition rounded text-sm font-medium" onclick="addToFlow('Message Box', 'bg-stone-200 border-stone-400')">
+                                    💬 Message Box
+                                </div>
+                                <div class="p-2 bg-white border border-stone-300 shadow-sm cursor-pointer hover:bg-orange-50 transition rounded text-sm font-medium" onclick="addToFlow('Close Excel', 'bg-green-100 border-green-300')">
+                                    📕 Excel: Close
+                                </div>
+                                <div class="mt-auto text-xs text-stone-500">
+                                    *Click vào hành động để thêm vào Flow
+                                </div>
+                            </div>
+
+                            <!-- Flow View -->
+                            <div class="w-full lg:w-3/4 bg-stone-50 p-4 relative flex flex-col">
+                                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                                    <h3 class="font-bold text-stone-600">Bot Logic Flow</h3>
+                                    <div class="space-x-2">
+                                        <button onclick="resetFlow()" class="text-xs px-3 py-1 bg-red-100 text-red-600 rounded hover:bg-red-200">Reset</button>
+                                        <button onclick="runSimulation()" class="text-xs px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600">▶ Run Bot</button>
+                                    </div>
+                                </div>
+                                <div id="flow-canvas" class="flex-1 overflow-y-auto space-y-2 p-2 border border-dashed border-stone-300 rounded bg-white">
+                                    <div id="empty-state" class="text-center text-stone-400 mt-20">
+                                        Bot chưa có lệnh nào.<br>Click vào Actions bên trái để thêm.
+                                    </div>
+                                    <!-- Dynamic Steps -->
+                                </div>
+                                <div id="console-log" class="h-32 bg-stone-900 text-green-400 font-mono text-xs p-2 mt-4 rounded overflow-y-auto hidden">
+                                    > Bot initialized...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            tutorials: {
+                title: "Cẩm nang hướng dẫn (PDF)",
+                description: "Xem chi tiết tài liệu hướng dẫn bên dưới.",
+                content: `
+                     <div class="w-full h-full min-h-[500px] flex flex-col items-center justify-center bg-stone-200 rounded-lg p-4 border border-stone-300">
+                        <!-- Sử dụng thẻ iframe để hiển thị PDF. 
+                             Lưu ý: File tutorials.pdf phải nằm cùng thư mục với file index.html này thì mới hiển thị được. -->
+                        <iframe src="tutorials.pdf" class="w-full h-[80vh] rounded shadow-sm bg-white" frameborder="0">
+                            <!-- Fallback nếu trình duyệt không hỗ trợ -->
+                            <div class="text-center p-8">
+                                <p class="text-stone-600 mb-4">Trình duyệt của bạn không hỗ trợ xem trước file PDF này trực tiếp.</p>
+                                <a href="tutorials.pdf" target="_blank" class="px-6 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition shadow-lg">
+                                    📥 Tải xuống tutorials.pdf
+                                </a>
+                            </div>
+                        </iframe>
+                     </div>
+                `
+            },
+        };
+
+        // --- Core Functions ---
+
+        function loadSection(sectionId) {
+            const main = document.getElementById('main-content');
+            const data = courseData[sectionId];
+            
+            // Fade out effect could be added here, but direct swap is snappier for this app
+            let htmlContent = `
+                <div class="mb-6 fade-in">
+                    <h1 class="text-3xl font-bold text-stone-800 mb-2">${data.title}</h1>
+                    <p class="text-lg text-stone-500">${data.description}</p>
+                </div>
+                <div class="fade-in">
+                    ${data.content}
+                </div>
+            `;
+            
+            main.innerHTML = htmlContent;
+
+            // Update Navigation Active State
+            document.querySelectorAll('#sidebar button').forEach(btn => {
+                btn.classList.remove('bg-stone-800', 'text-white', 'border-orange-500');
+                btn.classList.add('border-transparent');
+            });
+            const activeBtn = document.getElementById(`nav-${sectionId}`);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-stone-800', 'text-white', 'border-orange-500');
+                activeBtn.classList.remove('border-transparent');
+            }
+
+            // Init Charts if present
+            if(sectionId === 'dashboard') initDashboardCharts();
+            if(sectionId === 'variables') initVariableCharts();
+
+            // Mobile menu close
+            const sidebar = document.getElementById('sidebar');
+            if(window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        // --- Chart Logic ---
+
+        function initDashboardCharts() {
+            const ctx = document.getElementById('benefitsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Giảm lỗi con người', 'Tiết kiệm thời gian', 'Tăng năng suất'],
+                    datasets: [{
+                        data: [30, 45, 25],
+                        backgroundColor: ['#f97316', '#fed7aa', '#44403c'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        function initVariableCharts() {
+            const ctx = document.getElementById('variablesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['String', 'Number', 'Record', 'Boolean', 'List', 'Dictionary'],
+                    datasets: [{
+                        label: 'Tần suất sử dụng (%)',
+                        data: [40, 20, 15, 10, 10, 5],
+                        backgroundColor: '#f97316',
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        // --- Simulation Logic ---
+        let botSteps = [];
+
+        window.addToFlow = function(actionName, colorClass) {
+            const canvas = document.getElementById('flow-canvas');
+            const emptyState = document.getElementById('empty-state');
+            if(emptyState) emptyState.style.display = 'none';
+
+            botSteps.push(actionName);
+            
+            const stepDiv = document.createElement('div');
+            stepDiv.className = `p-3 rounded border-l-4 shadow-sm flex justify-between items-center ${colorClass} interactive-card`;
+            stepDiv.innerHTML = `
+                <span class="font-bold text-sm text-stone-700">${botSteps.length}. ${actionName}</span>
+                <span class="text-xs text-stone-400 cursor-pointer hover:text-red-500" onclick="removeStep(this, '${actionName}')">✖</span>
+            `;
+            canvas.appendChild(stepDiv);
+            
+            // Auto scroll to bottom
+            canvas.scrollTop = canvas.scrollHeight;
+        };
+
+        window.removeStep = function(el, name) {
+            el.parentElement.remove();
+            // Simple removal logic, re-indexing is complex for this simple sim, just purely visual removal
+        };
+
+        window.resetFlow = function() {
+            botSteps = [];
+            document.getElementById('flow-canvas').innerHTML = `
+                <div id="empty-state" class="text-center text-stone-400 mt-20">
+                    Bot chưa có lệnh nào.<br>Click vào Actions bên trái để thêm.
+                </div>
+            `;
+            document.getElementById('console-log').classList.add('hidden');
+        };
+
+        window.runSimulation = function() {
+            const consoleDiv = document.getElementById('console-log');
+            consoleDiv.classList.remove('hidden');
+            consoleDiv.innerHTML = '> Bot started...<br>';
+            
+            if(botSteps.length === 0) {
+                consoleDiv.innerHTML += '> <span class="text-red-400">Error: No actions found. Please add actions.</span>';
+                return;
+            }
+
+            let delay = 500;
+            botSteps.forEach((step, index) => {
+                setTimeout(() => {
+                    consoleDiv.innerHTML += `> Step ${index+1}: Executing <strong>${step}</strong>... OK<br>`;
+                    consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                    if(index === botSteps.length - 1) {
+                        setTimeout(() => {
+                            consoleDiv.innerHTML += '> <span class="text-white bg-green-600 px-1">Bot run completed successfully!</span><br>';
+                            consoleDiv.scrollTop = consoleDiv.scrollHeight;
+                        }, 500);
+                    }
+                }, delay);
+                delay += 800;
+            });
+        };
+
+        // --- Progress Logic ---
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.step-check');
+            const checked = document.querySelectorAll('.step-check:checked');
+            
+            // Avoid division by zero
+            if (checkboxes.length === 0) return;
+
+            const percentage = Math.round((checked.length / checkboxes.length) * 100);
+            
+            document.getElementById('overall-progress').style.width = percentage + '%';
+            document.getElementById('progress-text').innerText = percentage + '%';
+        }
+
+        // --- UI Events ---
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        });
+
+        // Init
+        loadSection('dashboard');
+
+    </script>
+    </body>
+</html>
